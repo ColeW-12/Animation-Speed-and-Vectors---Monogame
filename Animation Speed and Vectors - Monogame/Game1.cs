@@ -4,7 +4,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Animation_Speed_and_Vectors___Monogame
-{
+{   
+    enum Screen
+    {
+        Intro,
+        TribbleYard, 
+        End
+    }
+   
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -28,6 +35,15 @@ namespace Animation_Speed_and_Vectors___Monogame
         Rectangle orangeHairRect;
         Vector2 orangeHairSpeed;
 
+        Texture2D TribbleIntroTexture;
+
+        Texture2D TribbleOutroTexture;
+
+        Screen screen;
+
+
+        MouseState mouseState;
+
         Color greyTribbleColorMask;
 
         Color orangeTribbleColorMask;
@@ -48,6 +64,10 @@ namespace Animation_Speed_and_Vectors___Monogame
             // TODO: Add your initialization logic here
 
             window = new Rectangle(0, 0, 800, 600);
+
+            screen = Screen.Intro;
+
+            
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
@@ -83,6 +103,7 @@ namespace Animation_Speed_and_Vectors___Monogame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            
 
             greyHairtexture = Content.Load<Texture2D>("greyHair");
 
@@ -92,86 +113,105 @@ namespace Animation_Speed_and_Vectors___Monogame
 
             orangeHairTexture = Content.Load<Texture2D>("orangeHair");
 
+            TribbleIntroTexture = Content.Load<Texture2D>("tribble_intro");
+
+            TribbleOutroTexture = Content.Load<Texture2D>("gameOver");
 
             // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
+            mouseState = Mouse.GetState();
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             // TODO: Add your update logic here
 
-            greyHairRect.X += (int)greyHairSpeed.X;
-            if (greyHairRect.Right >= window.Width || greyHairRect.Left <= 0)
+            if (screen == Screen.Intro)
             {
-                greyHairSpeed.X *= -1;
-                greyTribbleColorMask = Color.Green;
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                    screen = Screen.TribbleYard;
             }
-
-            greyHairRect.Y += (int)greyHairSpeed.Y;
-
-            if (greyHairRect.Top <= 0 || greyHairRect.Bottom >= window.Height)
+            else if (screen == Screen.TribbleYard)
             {
-                greyHairSpeed.Y *= -1;
-                greyTribbleColorMask = Color.HotPink;
+                greyHairRect.X += (int)greyHairSpeed.X;
+                if (greyHairRect.Right >= window.Width || greyHairRect.Left <= 0)
+                {
+                    greyHairSpeed.X *= -1;
+                    greyTribbleColorMask = Color.Green;
+                }
+
+                greyHairRect.Y += (int)greyHairSpeed.Y;
+
+                if (greyHairRect.Top <= 0 || greyHairRect.Bottom >= window.Height)
+                {
+                    greyHairSpeed.Y *= -1;
+                    greyTribbleColorMask = Color.HotPink;
+                }
+
+                brownHairRect.X += (int)brownHairSpeed.X;
+                if (brownHairRect.Right >= 900 || brownHairRect.Left <= 0)
+                {
+                    brownHairSpeed.X *= 1;
+                    brownHairRect = new Rectangle(0, 100, 100, 100);
+                }
+
+                brownHairRect.Y += (int)brownHairSpeed.Y;
+
+                if (brownHairRect.Top <= 0 || brownHairRect.Left <= window.Height)
+                {
+                    brownHairSpeed.Y *= -2;
+                }
+
+
+                blondHairRect.X += (int)blondHairSpeed.X;
+                if (blondHairRect.Right >= window.Width || blondHairRect.Left <= 0)
+                {
+                    blondHairSpeed.X *= -1;
+                }
+
+                blondHairRect.Y += (int)blondHairSpeed.Y;
+
+                if (blondHairRect.Top <= 0 || blondHairRect.Bottom >= window.Height)
+                {
+                    blondHairSpeed.Y *= -1;
+                }
+
+
+                orangeHairRect.X += (int)orangeHairSpeed.X;
+
+                if (orangeHairRect.Right >= window.Width || orangeHairRect.Left <= 0)
+                {
+
+                    orangeHairSpeed.X *= -1;
+                    colour = generator.Next(2);
+                    if (colour == 0)
+                        orangeTribbleColorMask = Color.Purple;
+                    else
+                        orangeTribbleColorMask = Color.Green;
+
+                }
+                orangeHairRect.Y += (int)orangeHairSpeed.Y;
+
+                if (orangeHairRect.Top <= 0 || orangeHairRect.Bottom >= window.Height)
+                {
+                    orangeHairSpeed.Y *= -1;
+                    if (colour == 0)
+                        orangeTribbleColorMask = Color.AliceBlue;
+                    else
+                        orangeTribbleColorMask = Color.Yellow;
+                }
+
+                if (mouseState.RightButton == ButtonState.Pressed)
+                    screen = Screen.End;
             }
-
-            brownHairRect.X += (int)brownHairSpeed.X;
-            if (brownHairRect.Right >= 900 || brownHairRect.Left <= 0)
+            else if (screen == Screen.End)
             {
-                brownHairSpeed.X *= 1;
-                brownHairRect = new Rectangle (0, 100, 100, 100);
-            }
 
-            brownHairRect.Y += (int)brownHairSpeed.Y;
-
-            if (brownHairRect.Top <= 0 || brownHairRect.Left <= window.Height)
-            {
-                brownHairSpeed.Y *= -2;
             }
             
-            
-            blondHairRect.X += (int)blondHairSpeed.X;
-            if (blondHairRect.Right >= window.Width || blondHairRect.Left <= 0)
-            {
-                blondHairSpeed.X *= -1;
-            }
-
-            blondHairRect.Y += (int)blondHairSpeed.Y;
-
-            if (blondHairRect.Top <= 0 || blondHairRect.Bottom >= window.Height)
-            {
-                blondHairSpeed.Y *= -1;
-            }
-            
-
-            orangeHairRect.X += (int)orangeHairSpeed.X;
-
-            if (orangeHairRect.Right >= window.Width || orangeHairRect.Left <= 0)
-            {
-                orangeHairSpeed.X *= -1;
-                colour = generator.Next(2);
-                if (colour == 0)      
-                    orangeTribbleColorMask = Color.Purple;
-                else
-                    orangeTribbleColorMask = Color.Green;
-
-            }
-            orangeHairRect.Y += (int)orangeHairSpeed.Y;
-
-            if (orangeHairRect.Top <= 0 || orangeHairRect.Bottom >= window.Height)
-            {
-                orangeHairSpeed.Y *= -1;
-                if (colour == 0)
-                    orangeTribbleColorMask = Color.AliceBlue;
-                else
-                    orangeTribbleColorMask = Color.Yellow;
-            }
-
-         
-
             base.Update(gameTime);
         }
 
@@ -182,13 +222,22 @@ namespace Animation_Speed_and_Vectors___Monogame
             // TODO: Add your drawing code here
 
             _spriteBatch.Begin();
-
-            _spriteBatch.Draw(greyHairtexture, greyHairRect, greyTribbleColorMask);
-            _spriteBatch.Draw(brownHairTexture, brownHairRect, Color.White);
-            _spriteBatch.Draw(blondHairTexture, blondHairRect, Color.White);
-            _spriteBatch.Draw(orangeHairTexture, orangeHairRect, orangeTribbleColorMask);
+            if (screen == Screen.Intro)
+            {
+                _spriteBatch.Draw(TribbleIntroTexture, window, Color.White);
+            }
+            else if (screen == Screen.TribbleYard)
+            {
+                _spriteBatch.Draw(greyHairtexture, greyHairRect, greyTribbleColorMask);
+                _spriteBatch.Draw(brownHairTexture, brownHairRect, Color.White);
+                _spriteBatch.Draw(blondHairTexture, blondHairRect, Color.White);
+                _spriteBatch.Draw(orangeHairTexture, orangeHairRect, orangeTribbleColorMask);
+            }
+            if (screen == Screen.End)
+            {
+                _spriteBatch.Draw(TribbleOutroTexture, window, Color.White);
+            }
             
-
             _spriteBatch.End();
 
 
